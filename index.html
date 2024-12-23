@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agende sua entrega pelo WhatsApp</title>
+
+  <!-- Link para a fonte Sora no Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Definindo o estilo básico */
+    body {
+      font-family: 'Sora', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      position: relative;
+      max-width: 600px;
+      width: 90%;
+      font-size: 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 25px;
+      font-weight: bold;
+    }
+
+    p {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    /* Texto 'Fazendo pedido hoje, receba amanhã' */
+    .quick-delivery {
+      font-size: 22px;
+      font-weight: bold;
+      color: #28a745; /* Cor verde para destacar */
+      margin-bottom: 20px;
+    }
+
+    /* Estilo do botão de WhatsApp */
+    .whatsapp-btn {
+      display: inline-block;
+      text-decoration: none;
+      font-size: 22px;
+      padding: 20px 50px;
+      background-color: #25D366; /* Cor do WhatsApp */
+      color: white;
+      border-radius: 12px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%; /* Garantir que o botão ocupe 100% da largura disponível */
+      box-sizing: border-box; /* Para não ultrapassar os limites */
+    }
+
+    .whatsapp-btn:hover {
+      background-color: #128C7E; /* Cor mais escura do WhatsApp */
+    }
+
+    .whatsapp-icon {
+      margin-right: 12px;
+    }
+
+    /* Estilo da notificação fake */
+    .notification {
+      position: absolute;
+      top: -50px;
+      right: -30px;
+      background-color: #ffffff;
+      border-left: 5px solid #25D366;
+      padding: 20px;
+      font-size: 18px;
+      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: none; /* Inicia invisível */
+      max-width: 350px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .notification.show {
+      display: block;
+    }
+
+    .notification .region {
+      font-weight: bold;
+      color: #25D366;
+    }
+
+    /* Estilo do alerta de estoque baixo */
+    .stock-alert {
+      background-color: #ff4d4d;
+      color: white;
+      font-size: 20px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: none;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Agende sua entrega pelo WhatsApp</h1>
+    <p>Para agendar a entrega do seu produto, basta clicar no botão abaixo e falar diretamente conosco pelo WhatsApp.</p>
+
+    <!-- Texto 'Fazendo pedido hoje, receba amanhã' -->
+    <p class="quick-delivery">Fazendo pedido hoje, receba amanhã!</p>
+
+    <!-- Alerta de Estoque Acabando -->
+    <div id="stock-alert" class="stock-alert">
+      <strong>Atenção:</strong> Estoque acabando! Garanta já o seu pedido!
+    </div>
+
+    <!-- Link com Deeplink do WhatsApp -->
+    <a href="whatsapp://send?phone=5511998765432&text=Olá%2C+gostaria+de+saber+mais%21" class="whatsapp-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="Ícone WhatsApp" class="whatsapp-icon" width="30" height="30">
+      Fale no WhatsApp
+    </a>
+
+    <!-- Notificação Fake -->
+    <div id="notification" class="notification">
+      <span id="notification-text"></span>
+    </div>
+  </div>
+
+  <script>
+    // Lista fictícia de nomes e localizações
+    const users = [
+      { name: "Vanesa Silva", region: "São Paulo" },
+      { name: "Maria Oliveira", region: "Rio de Janeiro" },
+      { name: "Ana Souza", region: "Minas Gerais" },
+      { name: "Fernanda Costa", region: "Bahia" },
+      { name: "Juliana Pereira", region: "Santa Catarina" },
+      { name: "Carla Mendes", region: "Paraná" },
+      { name: "Patrícia Lima", region: "Ceará" },
+      { name: "Roberta Almeida", region: "Pernambuco" }
+    ];
+
+    // Função para gerar uma notificação com um nome e localização aleatória
+    function generateNotification() {
+      // Escolhe aleatoriamente um usuário da lista
+      const randomUser = users[Math.floor(Math.random() * users.length)];
+
+      // Exibe a notificação com o nome e a localização do usuário
+      const notificationText = `${randomUser.name} de ${randomUser.region} acabou de fazer um pedido de 4 frascos.`;
+      document.getElementById('notification-text').innerText = notificationText;
+      document.getElementById('notification').classList.add('show');
+    }
+
+    // Função para exibir o alerta de estoque acabando
+    function checkStock() {
+      const stockQuantity = 5; // Exemplo de estoque baixo (pode ser dinamicamente alterado)
+      if (stockQuantity <= 10) {
+        document.getElementById('stock-alert').style.display = 'block';
+      }
+    }
+
+    // Chama as funções para gerar a notificação e verificar o estoque
+    generateNotification();
+    checkStock();
+  </script>
+</body>
+</html>
